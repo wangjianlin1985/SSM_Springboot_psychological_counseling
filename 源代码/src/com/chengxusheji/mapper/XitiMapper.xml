@@ -1,0 +1,49 @@
+﻿<!DOCTYPE mapper  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--namespace命名空间，为了对sql语句进行隔离，方便管理，mapper开发dao方式，使用namespace有特殊作用  
+mapper代理开发时将namespace指定为mapper接口的全限定名  
+ -->
+<mapper namespace="com.chengxusheji.mapper.XitiMapper"> 
+<!--在mapper.xml文件中配置很多的sql语句，执行每个sql语句时，封装为MappedStatement对象 
+mapper.xml以statement为单位管理sql语句  
+ -->
+	<!-- 添加习题记录 -->
+	<insert id="addXiti" parameterType="xiti">
+		insert into t_xiti(courseObj,title,content,xitiTime) values 
+		(#{courseObj.courseNo},#{title},#{content},#{xitiTime})
+	</insert>
+
+	<!-- 按照查询条件分页查询习题记录 -->
+	<select id="queryXiti" resultMap="xitiMap" >
+		select t_xiti.* from t_xiti,t_course ${where} and t_xiti.courseObj = t_course.courseNo limit #{startIndex},#{pageSize}
+	</select>
+	<resultMap id="xitiMap" type="xiti">
+        <id property="xitiId" column="xitiId" />
+        <association property="courseObj" column="courseObj" select="com.chengxusheji.mapper.CourseMapper.getCourse" />
+    </resultMap>
+
+    <!-- 按照查询条件查询所有习题记录 -->
+	<select id="queryXitiList" resultMap="xitiMap" >
+		select t_xiti.* from t_xiti,t_course ${where} and t_xiti.courseObj = t_course.courseNo
+	</select>
+
+    <!-- 按照查询条件的习题记录数 -->
+	<select id="queryXitiCount" resultType="int">
+		select count(*) from t_xiti,t_course ${where} and t_xiti.courseObj = t_course.courseNo
+	</select>
+
+	<!-- 根据主键查询某个习题记录 -->
+	<select id="getXiti" parameterType="int" resultMap="xitiMap">
+		select * from t_xiti where t_xiti.xitiId = #{xitiId}
+	</select>
+
+	<!-- 更新习题记录 -->
+	<update id="updateXiti" parameterType="xiti">
+		update t_xiti set courseObj=#{courseObj.courseNo},title=#{title},content=#{content},xitiTime=#{xitiTime} where xitiId = #{xitiId}
+	</update>
+
+	<!-- 删除习题记录 -->
+	<delete id="deleteXiti" parameterType="int">
+		delete from t_xiti where xitiId=#{xitiId}
+	</delete>
+
+</mapper>

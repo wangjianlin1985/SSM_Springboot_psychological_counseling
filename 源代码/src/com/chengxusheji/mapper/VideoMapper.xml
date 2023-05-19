@@ -1,0 +1,49 @@
+﻿<!DOCTYPE mapper  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--namespace命名空间，为了对sql语句进行隔离，方便管理，mapper开发dao方式，使用namespace有特殊作用  
+mapper代理开发时将namespace指定为mapper接口的全限定名  
+ -->
+<mapper namespace="com.chengxusheji.mapper.VideoMapper"> 
+<!--在mapper.xml文件中配置很多的sql语句，执行每个sql语句时，封装为MappedStatement对象 
+mapper.xml以statement为单位管理sql语句  
+ -->
+	<!-- 添加心理资料记录 -->
+	<insert id="addVideo" parameterType="video">
+		insert into t_video(title,courseObj,videoDesc,videoFile,videoTime) values 
+		(#{title},#{courseObj.courseNo},#{videoDesc},#{videoFile},#{videoTime})
+	</insert>
+
+	<!-- 按照查询条件分页查询心理资料记录 -->
+	<select id="queryVideo" resultMap="videoMap" >
+		select t_video.* from t_video,t_course ${where} and t_video.courseObj = t_course.courseNo limit #{startIndex},#{pageSize}
+	</select>
+	<resultMap id="videoMap" type="video">
+        <id property="videoId" column="videoId" />
+        <association property="courseObj" column="courseObj" select="com.chengxusheji.mapper.CourseMapper.getCourse" />
+    </resultMap>
+
+    <!-- 按照查询条件查询所有心理资料记录 -->
+	<select id="queryVideoList" resultMap="videoMap" >
+		select t_video.* from t_video,t_course ${where} and t_video.courseObj = t_course.courseNo
+	</select>
+
+    <!-- 按照查询条件的心理资料记录数 -->
+	<select id="queryVideoCount" resultType="int">
+		select count(*) from t_video,t_course ${where} and t_video.courseObj = t_course.courseNo
+	</select>
+
+	<!-- 根据主键查询某个心理资料记录 -->
+	<select id="getVideo" parameterType="int" resultMap="videoMap">
+		select * from t_video where t_video.videoId = #{videoId}
+	</select>
+
+	<!-- 更新心理资料记录 -->
+	<update id="updateVideo" parameterType="video">
+		update t_video set title=#{title},courseObj=#{courseObj.courseNo},videoDesc=#{videoDesc},videoFile=#{videoFile},videoTime=#{videoTime} where videoId = #{videoId}
+	</update>
+
+	<!-- 删除心理资料记录 -->
+	<delete id="deleteVideo" parameterType="int">
+		delete from t_video where videoId=#{videoId}
+	</delete>
+
+</mapper>
